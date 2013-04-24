@@ -1,0 +1,4 @@
+siglib
+======
+
+Simple Signals library
