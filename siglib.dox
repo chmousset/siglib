@@ -1,0 +1,132 @@
+/*
+    SigLib
+*/
+
+/** @mainpage
+ * @defgroup siglib SigLib
+ * @details SigLib is a flexible framework to compute signals and control blocks in discrete-time domain. @n
+ * it was designed with three goals in mind:
+ * - flexibility: dynamic control block structure, custom signals
+ * - robustness: dynamic check, easy debugging
+ * - efficency: small overhead, integer and floating-point calculations
+ * 
+ * 
+ * @par The signal concept
+ * signals are pretty close to the discrete-time concept of signals. x[n] represents the value of the signal at index 'n'. @n
+ * n is an integer; it can represent time in seconds, pixel coordinate or even number of tries, but not only. @n
+ * @note
+ * <b>A signal is read for one particular value of 'n'.</b>
+ * @par
+ * in SigLib, a signal can be either:
+ * - a function @b sig-func
+ * - a pointer to a variable in memory @b sig-ptr
+ * - a constant value (x[n] = constant) @b sig-cst
+ * @par
+ * function type signals can use other signals as input source. This makes possible building complexe control loops or filters.
+ * 
+ * @par Example
+ * let's start with a simple example:@n
+ * we have two variables, x and y, and a signal sumxy. sumxy is defined as a @b sig-func that returns the sum of it's parameters (by setting .x = sig_add_f).@n
+ * in sumxy we define it's parameters as pointers to x and y in sumxy_params.
+ @code{.c}
+ volatile float x, y, z[2];
+ struct sig_add_param_f sumxy_params = {.a = NULL, .a_var = &x, .a_cst = 0, .b = NULL, .b_var = &y, .b_cst = 0, .n_last = 0};
+ struct signal_float sumxy = {.name = "sum of x and y", .x = sig_add_f, .x_var = NULL, .x_cst = 0, .params = &sumxy_params};
+
+ x = 1; y = 2;
+ z[0] = sig_get_value_f(&sumxy, 1);		// 3.0
+ x = 4; y = 5;
+ z[1] = sig_get_value_f(&sumxy, 2);		// 9.0
+ @endcode
+ * 
+ * @par Polymorphism
+ * @b sig-type Polymorphism is simple way of testing and experimenting on signals.@n
+ * Any signal can be changed into a @b sig-ptr , @b sig-func or @b sig-cst transparently for the application that use them.@n
+ * It allows you, for exemple, to replace the real reading of a sensor by a simulated value to analyze it's impact on the system's output.
+ * 
+ * @par Unicity Property
+ * A very important property of signals is the unicity of their value against 'n'. @n
+ * it means that, for the same 'n', a signal will return the same value for all readings. This is particularly interesting if we use the same signal twice in a control loop, or if we want to monitor one signal. @n
+ * Let's illustrate this :
+ @code{.c}
+ volatile float x, y, z[5];
+ struct sig_add_param_f sumxy_params = {.a = NULL, .a_var = &x, .a_cst = 0, .b = NULL, .b_var = &y, .b_cst = 0, .n_last = 0};
+ struct signal_float sumxy = {.name = "sum of x and y", .x = sig_add_f, .x_var = NULL, .x_cst = 0, .params = &sumxy_params};
+
+ x = 1; y = 2;
+ z[0] = sig_get_value_f(&sumxy, 1);		// 3.0
+ x = 4; y = 5;
+ z[1] = sig_get_value_f(&sumxy, 2);		// 9.0
+ x = -10; y = 8;
+ z[2] = sig_get_value_f(&sumxy, 2);		// still 9.0 as the value at n=1 has already been evaluated
+ z[3] = sig_get_value_f(&sumxy, 3);		// -2.0
+ x = 0; y = 3;
+ z[4] = sig_get_value_f(&sumxy, 2);		// 3.0
+ @endcode
+ 
+ * @note 
+ * @b sig-ptr don't have this property by default.@n To get unicity with pointer-type signals, use the sampler @b sig-func.
+ * @code{.c}
+ volatile float var_to_sample;
+ float read[4];
+ struct signal_float sig_sampled = {.name = "sampled_sig", .x = NULL, .x_var = &var_to_sample, .x_cst = 0};
+ struct sig_sampler_param_f par = {0};
+ 
+ // at this point, the signal is still a sig-ptr as x = NULL
+ var_to_sample = 1.0;
+ read[0] = sig_get_value_f(&sig_sampled, 1);  // return 1.0
+ var_to_sample = 2.0;
+ read[1] = sig_get_value_f(&sig_sampled, 1);  // return 2.0
+ 
+ // make the signal sampled, will then satisfy Unicity Property
+ sig_sampled.params = (void*) & par;
+ sig_sampled.x = sig_sampler_f;   // sampler function for floating point
+ 
+ var_to_sample = 3.0;
+ read[2] = sig_get_value_f(&sig_sampled, 2);  // sample and return 3.0
+ var_to_sample = 4.0;
+ read[3] = sig_get_value_f(&sig_sampled, 2);  // n unchanged => return stored value 3.0
+ 
+ @endcode
+ * 
+ * @par n-Rollover safe
+ * In discrete-time concept, 'n' can be infinite. Obviously it's not possible for 'n' to be infinite as we are working with a fixed-size variables. @n
+ * all @b sig-func should and are designed to provide a consistant output even when 'n' rollovers (in the case of 32bits unsigned-int) from 0xFFFFFFFF to 0X00000000 @n
+ * @b sig-ptr and @b sig-cst are n-Rollover safe by nature. @n
+ * 
+ * 
+ * @par n-Window
+ * n-Window is a range of 'n' for which the sig-func is valid. Inside the window, the macro SIG_NWINDOW_VALID(n, sig) returns 1; it returns 0 otherwise. @n
+ * for a sig-func tu use n-Window, it should have n_min and n_max in it's parameter structure (same type as 'n', int type). @n
+ * the n-Window is n-Rollover safe; if n_min > n_max the window is simply cut in two parts. Example: @n
+ *@code
+ (n_min <= n_max) iiiiiiivvvvviiiii
+ (n_min >  n_max) vvvvvvviiiiivvvvv
+ (v is valid; i is invalid)
+ @endcode
+ */
+
+/**
+ * @defgroup config Configuration
+ * @ingroup siglib
+ */
+
+/**
+ * @defgroup float Floating-point
+ * @details floating-point version of data structures and functions
+ * @ingroup siglib
+ */
+ 
+/**
+ * @defgroup float sig-func
+ * @details function signals
+ * @ingroup siglib
+ */
+
+
+/**
+ * @defgroup int interger
+ * @details integer version of data structures and functions
+ * @ingroup siglib
+ */
+
