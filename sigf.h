@@ -107,6 +107,7 @@ struct sig_step_param_f {
 /** @ingroup float
  * @struct sig_fir_n_param_f
  * @brief structure representing the parameters of a generic n-tap FIR filter
+ * you can design your filter with http://t-filter.appspot.com/fir/index.html
  */
 struct sig_fir_n_param_f {
 	int tap_count;										//!< how many taps are present
