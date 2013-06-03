@@ -75,7 +75,7 @@ float sig_add_f(struct signal_float *self, n_t n)
 		return self->x_cst;
 
 	if(ptr->a)
-		a = sig_get_value_f(ptr->a, n);
+		a = sig_value(ptr->a, n);		//a = sig_get_value_f(ptr->a, n);
 	else if(ptr->a_var)
 		a = *ptr->a_var;
 	else
@@ -84,7 +84,7 @@ float sig_add_f(struct signal_float *self, n_t n)
 	SIG_ERRNO_FAIL
 		
 	if(ptr->b)
-		b = sig_get_value_f(ptr->b, n);
+		b = sig_value(ptr->b, n);		//b = sig_get_value_f(ptr->b, n);
 	else if(ptr->b_var)
 		b = *ptr->b_var;
 	else
@@ -114,7 +114,7 @@ float sig_iirlp1_f(struct signal_float *self, n_t n)
 	if (n == ptr->n_last)
 		return self->x_cst;
 	
-	source_value = sig_get_value_f(ptr->source, n);
+	source_value = sig_value(ptr->source, n);		//source_value = sig_get_value_f(ptr->source, n);
 
 	self->x_cst = (self->x_cst * ptr->oma) +  (source_value * ptr->a);
 	ptr->n_last = n;
@@ -155,7 +155,7 @@ float sig_fir_n_f(struct signal_float *self, n_t n)
 	if (n == ptr->n_last)
 		return self->x_cst;
 
-	ptr->samples[ptr->index_last++] = sig_get_value_f(ptr->source, n);		// store the input into the buffer
+	ptr->samples[ptr->index_last++] = sig_value(ptr->source, n);		// store the input into the buffer
 	ptr->index_last %= ptr->tap_count;										// make sure the index rollback
 	index = ptr->index_last;
 

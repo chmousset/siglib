@@ -90,6 +90,12 @@ extern char sig_err_name[SIG_DBG_NAME_LENGHT];		//!< name of the signal that had
 	return 0;}
 #endif
 
+/**
+ * generic macro to get the value of a signal. It's advantage is that it's type independent and inline so this should help with speed.
+ */
+#define sig_value(s,n) (sig_errno !=0 ? 0 : ( (s)->x != NULL ? (s)->x((s), n) : ( (s)->x_var ? *((s)->x_var) : (s)->x_cst ) ) )
+
+
 /** @} */
 
 /** @ingroup float
