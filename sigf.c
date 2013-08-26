@@ -174,9 +174,12 @@ float sig_pid_opt_f (struct signal_float *self, n_t n)
 	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
 	float output, error;
 	int i;
-	if (ptr == NULL)
-		SIG_ERRNO(-1);
 	
+	SIG_ERRNO_FAIL
+	if(self == NULL)
+		SIG_ERRNO(-1);
+	if(self->params == NULL)
+		SIG_ERRNO(-2);
 	if (n == ptr->n_last)
 		return self->x_cst;
 	
@@ -213,8 +216,12 @@ float sig_pid_naive_f (struct signal_float *self, n_t n)
 	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
 	float output, error;
 	int i;
-	if (ptr == NULL)
+	
+	SIG_ERRNO_FAIL
+	if(self == NULL)
 		SIG_ERRNO(-1);
+	if(self->params == NULL)
+		SIG_ERRNO(-2);
 	
 	if (n == ptr->n_last)
 		return self->x_cst;
