@@ -167,3 +167,100 @@ float sig_fir_n_f(struct signal_float *self, n_t n)
 	}
 	return self->x_cst;
 }
+
+
+float sig_pid_opt_f (struct signal_float *self, n_t n)
+{
+	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
+	float output, error;
+	int i;
+	if (ptr == NULL)
+		SIG_ERRNO(-1);
+	
+	if (n == ptr->n_last)
+		return self->x_cst;
+	
+	if (n == ptr->n_last)
+		return self->x_cst;
+	
+	// get the current error
+	error = sig_get_value_f(ptr->setpoint, n);
+	if (ptr->feedback)
+		error -= sig_get_value_f(ptr->feedback, n);
+	
+	// push new error sample into the history
+	ptr->history[2] = ptr->history[1];
+	ptr->history[1] = ptr->history[0];
+	ptr->history[0] = error;
+	
+	// compute the PID output
+	self->x_cst += ptr->history[0] * ptr->k[0];
+	self->x_cst += ptr->history[1] * ptr->k[1];
+	self->x_cst += ptr->history[2] * ptr->k[2];
+	
+	// limit the output to max_output
+	if (self->x_cst > ptr->max_output)
+		self->x_cst = ptr->max_output;
+	else if (self->x_cst < (-1 * ptr->max_output))
+		self->x_cst = -1 * ptr->max_output;
+	
+	return self->x_cst;
+}
+
+
+float sig_pid_naive_f (struct signal_float *self, n_t n)
+{
+	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
+	float output, error;
+	int i;
+	if (ptr == NULL)
+		SIG_ERRNO(-1);
+	
+	if (n == ptr->n_last)
+		return self->x_cst;
+	
+	if (n == ptr->n_last)
+		return self->x_cst;
+	
+	// get the current error
+	error = sig_get_value_f(ptr->setpoint, n);
+	if (ptr->feedback)
+		error -= sig_get_value_f(ptr->feedback, n);
+	
+	// push new error sample into the history
+	ptr->history[2] = ptr->history[1];
+	ptr->history[1] = ptr->history[0];
+	ptr->history[0] = error;
+	
+	// compute the PID output
+	self->x_cst = ptr->history[0] * ptr->p;
+	ptr->integral += ptr->history[0] * ptr->i;
+	self->x_cst += ptr->integral;
+	self->x_cst += (ptr->history[0] - ptr->history[1]) * ptr->d;
+	
+	
+	// limit the integral part to max_output
+	if (ptr->integral > ptr->max_output)
+		ptr->integral = ptr->max_output;
+	else if (ptr->integral < (-1 * ptr->max_output))
+		ptr->integral = -1 * ptr->max_output;
+	
+	// limit the output to max_output
+	if (self->x_cst > ptr->max_output)
+		self->x_cst = ptr->max_output;
+	else if (self->x_cst < (-1 * ptr->max_output))
+		self->x_cst = -1 * ptr->max_output;
+	
+	return self->x_cst;
+}
+
+
+void sig_pid_compute_k_f (struct signal_float *self)
+{
+	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
+	if (ptr == NULL)
+		SIG_ERRNO(-1);
+	ptr->k[0] = ptr->p + ptr->i + ptr->d;
+	ptr->k[1] = -1 * ptr->p - 2 * ptr->i;
+	ptr->k[2] = ptr->d;
+}

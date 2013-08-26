@@ -33,6 +33,13 @@
  * @{
  */
 
+/**
+ * @brief Enables PID feed-forard
+ */
+#if !defined(SIG_PID_FF) || defined(__DOXYGEN__)
+#define SIG_PID_FF                  TRUE
+#endif
+
 /** @} */
 
 
@@ -118,6 +125,33 @@ struct sig_fir_n_param_f {
 	n_t n_last;											//!< the evaluation was done at n = n_last
 };
 
+/** @ingroup float
+ * @struct sig_pid_param_f
+ * @brief structure representing the parameters of a PID controller
+ * @details Since signals are not aware of computation period, I and D coefficients don't consider sampling rate. Thus, I and D gains should be corrected with sampling time (dt being the sample period):
+ *   - The real D gain is d*dt
+ *   - The real I gain is i/dt
+ *   - P is the real gain
+ * 
+ * This is one of the reasons why care should be taken to compute PID algorithm at precise time.
+ */
+struct sig_pid_param_f {
+	float n_last;										//!< last value of the PID output
+	float p;											//!< Proportional gain
+	float i;											//!< Integral gain
+	float d;											//!< Derivative gain
+	float k[3];											//!< K-params calculated from P, I and D terms. Used by optimized form. Computed from p, i and d by sig_pid_compute_k_f()
+	float max_output;									//!< output limit. Also used for anti-windup
+	float integral;										//!< integral term (for naive form)
+	float history[3];									//!< history of the erro input (to compute d-term)
+	struct signal_float *setpoint;						//!< setpoint (target). Error input if feedback is NULL
+	struct signal_float *feedback;						//!< feedback (measured output). Set to NULL to use setpoint as an error input
+#if (SIG_PID_FF) || defined(__DOXYGEN__)
+	float ff[3];										//!< Feed-Forward parameters
+	float sh[2];										//!< setpoint history for Feed-Forward computation
+#endif
+};
+
 
 /** @ingroup float
  * @brief evaluate the signal an return it's value
@@ -195,5 +229,46 @@ float sig_iirlp1_f(struct signal_float *self, n_t n);
 float sig_fir_n_f(struct signal_float *self, n_t n);
 
 float sig_step_f(struct signal_float *self, n_t n);
+
+
+/** @ingroup float
+ * @ingroup sig-func
+ * @brief PID computation, naive (trivial) version.
+ * @details This version of the PID computation is not optimized for speed, but does not require
+ * the K-params, so the P, I and D parameters can be changed on the fly without calling sig_pid_compute_k_f()
+ * @see sig_pid_param_f
+ *
+ * @param[in] self pointer to the signal structure
+ * @param[in] n the value of n
+ */
+float sig_pid_naive_f (struct signal_float *self, n_t n);
+
+
+/** @ingroup float
+ * @ingroup sig-func
+ * @brief PID computation, optimized version
+ * @details Used the K-params to save multiple sycles or computation.
+ * the function sig_pid_compute_k_f() must be called before using the optimized form.
+ * @see sig_pid_param_f
+ *
+ * @param[in] self pointer to the signal structure
+ * @param[in] n the value of n
+ */
+float sig_pid_opt_f (struct signal_float *self, n_t n);
+
+
+/** @ingroup float
+ * @ingroup sig-func
+ * @brief PID K-params computation. Must be used each time the P,I or D parameters are modified
+ * @details k[0] = P + I + D
+ * k[1] = -P - 2 * D
+ * k[2] = D
+ * @see sig_pid_param_f
+ *
+ * @param[in] self pointer to the signal structure
+ * @param[in] n the value of n
+ */
+void sig_pid_compute_k_f (struct signal_float *self);
+
 
 #endif
