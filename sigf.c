@@ -182,7 +182,6 @@ float sig_pid_opt_f (struct signal_float *self, n_t n)
 		SIG_ERRNO(-2);
 	if (n == ptr->n_last)
 		return self->x_cst;
-	
 	if (n == ptr->n_last)
 		return self->x_cst;
 	

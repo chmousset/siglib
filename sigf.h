@@ -136,7 +136,7 @@ struct sig_fir_n_param_f {
  * This is one of the reasons why care should be taken to compute PID algorithm at precise time.
  */
 struct sig_pid_param_f {
-	float n_last;										//!< last value of the PID output
+	n_t n_last;											//!< the evaluation was done at n = n_last
 	float p;											//!< Proportional gain
 	float i;											//!< Integral gain
 	float d;											//!< Derivative gain
