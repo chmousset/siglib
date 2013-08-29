@@ -265,8 +265,37 @@ void sig_pid_compute_k_f (struct signal_float *self)
 {
 	struct sig_pid_param_f *ptr = (struct sig_pid_param_f *) self->params;
 	if (ptr == NULL)
-		SIG_ERRNO(-1);
+		return;
 	ptr->k[0] = ptr->p + ptr->i + ptr->d;
 	ptr->k[1] = -1 * ptr->p - 2 * ptr->i;
 	ptr->k[2] = ptr->d;
+}
+
+
+float sig_buf_read_f (struct signal_float *self, n_t n)
+{
+	struct sig_buf_read_param_f *ptr = (struct sig_buf_read_param_f *) self->params;
+	int index;
+	
+	SIG_ERRNO_FAIL
+	if(self == NULL)
+		SIG_ERRNO(-1);
+	if(self->params == NULL)
+		SIG_ERRNO(-2);
+	if ((ptr->buffer == NULL) && (ptr->check_buffer))
+		SIG_ERRNO(-3);
+	
+	if (n == ptr->n_last)
+		return self->x_cst;
+	
+	if (ptr->buffer)
+	{
+		if (ptr->circular)
+			index = (n + ptr->delta) % ptr->size;
+		else
+			index = min((n + ptr->delta), ptr->size - 1);
+		
+		self->x_cst = ptr->buffer[index];
+	}
+	return self->x_cst;
 }

@@ -152,6 +152,20 @@ struct sig_pid_param_f {
 #endif
 };
 
+/** @ingroup float
+ * @struct sig_buf_read_param_f
+ * @brief structure representing the parameters of a buffer reader
+ */
+struct sig_buf_read_param_f {
+	float *buffer;										//!< points to the data buffer
+	int size;											//!< Size of the buffer. If the buffer is circular, the index will be modulo size
+	int delta;											//!< delta between data index and n. index = n + delta
+	unsigned circular		: 1;						//!< if 1, buffer is circular (index = (n + delta) % size). If not, the output will stick when size is exceeded (index = min ((size-1), n + delta))
+	unsigned check_buffer	: 1;						//!< if 1, throw an error if the buffer is NULL<; If 0, return x_cst until buffer is not NULL
+	unsigned dummy			: 6;						//!< unused. Reserved for future use
+	n_t n_last;											//!< the evaluation was done at n = n_last
+};
+
 
 /** @ingroup float
  * @brief evaluate the signal an return it's value
@@ -269,6 +283,18 @@ float sig_pid_opt_f (struct signal_float *self, n_t n);
  * @param[in] n the value of n
  */
 void sig_pid_compute_k_f (struct signal_float *self);
+
+
+/** @ingroup float
+ * @ingroup sig-func
+ * @brief buffer reader. Outputs the content of a buffer
+ * @details The buffer reader has two behaviours depending if circular is set or not.
+ * @see sig_buf_read_param_f
+ *
+ * @param[in] self pointer to the signal structure
+ * @param[in] n the value of n
+ */
+float sig_buf_read_f (struct signal_float *self, n_t n);
 
 
 #endif
