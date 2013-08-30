@@ -200,6 +200,16 @@ float sig_pid_opt_f (struct signal_float *self, n_t n)
 	self->x_cst += ptr->history[1] * ptr->k[1];
 	self->x_cst += ptr->history[2] * ptr->k[2];
 	
+	// compute Feed-Forward
+	#if SIG_PID_FF
+	if (ptr->ff0)
+		self->x_cst += sig_get_value_f(ptr->ff0) * ptr->ff[0];
+	if (ptr->ff1)
+		self->x_cst += sig_get_value_f(ptr->ff1) * ptr->ff[1];
+	if (ptr->ff2)
+		self->x_cst += sig_get_value_f(ptr->ff2) * ptr->ff[2];
+	#endif
+	
 	// limit the output to max_output
 	if (self->x_cst > ptr->max_output)
 		self->x_cst = ptr->max_output;
@@ -244,6 +254,15 @@ float sig_pid_naive_f (struct signal_float *self, n_t n)
 	self->x_cst += ptr->integral;
 	self->x_cst += (ptr->history[0] - ptr->history[1]) * ptr->d;
 	
+	// compute Feed-Forward
+	#if SIG_PID_FF
+	if (ptr->ff0)
+		self->x_cst += sig_get_value_f(ptr->ff0) * ptr->ff[0];
+	if (ptr->ff1)
+		self->x_cst += sig_get_value_f(ptr->ff1) * ptr->ff[1];
+	if (ptr->ff2)
+		self->x_cst += sig_get_value_f(ptr->ff2) * ptr->ff[2];
+	#endif
 	
 	// limit the integral part to max_output
 	if (ptr->integral > ptr->max_output)

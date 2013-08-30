@@ -164,6 +164,9 @@ struct sig_pid_param_f {
 #if (SIG_PID_FF) || defined(__DOXYGEN__)
 	float ff[3];										//!< Feed-Forward parameters
 	float sh[2];										//!< setpoint history for Feed-Forward computation
+	struct signal_float *ff0;							//!< Feed-Forward source 0. Set to NULL will deactive this term
+	struct signal_float *ff1;							//!< Feed-Forward source 1. Set to NULL will deactive this term
+	struct signal_float *ff2;							//!< Feed-Forward source 2. Set to NULL will deactive this term
 #endif
 };
 
