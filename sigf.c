@@ -316,3 +316,27 @@ float sig_buf_read_f (struct signal_float *self, n_t n)
 	}
 	return self->x_cst;
 }
+
+
+#if SIG_DBG_NAME || defined(__DOXYGEN__)
+#if SIG_SEARCH || defined(__DOXYGEN__)
+struct signal_float *sig_search_f(char *name, struct signal_float *array, int len)
+{
+	int i = 0;
+	for(i = 0; i < len; i++)
+		if (strcmp(array[i].name, name) == 0)
+			return &array[i];
+	return NULL;
+}
+
+
+struct signal_float *sig_search_list_f(char *name, struct signal_float **list)
+{
+	int i = 0;
+	while(list[i++])
+		if (strcmp(list[i]->name, name) == 0)
+			return list[i];
+	return NULL;
+}
+#endif	// SIG_SEARCH
+#endif	// SIG_DBG_NAME

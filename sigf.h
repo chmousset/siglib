@@ -320,4 +320,28 @@ void sig_pid_compute_k_f (struct signal_float *self);
 float sig_buf_read_f (struct signal_float *self, n_t n);
 
 
+#if SIG_DBG_NAME || defined(__DOXYGEN__)
+#if SIG_SEARCH || defined(__DOXYGEN__)
+/** @ingroup float
+ * @ingroup pool
+ * @brief Search for a signal in a signal pool by it's name
+ * @details returns the pointer to the matching signal, or NULL if not found
+ * @param[in] *name string containing the signal you are searching for
+ * @param[in] *array array of struct signal_float.
+ * @param[in] len search until len is reached, or the signal is found.
+ */
+struct signal_float *sig_search_f(char *name, struct signal_float *array, int len);
+
+
+/** @ingroup float
+ * @ingroup pool
+ * @brief Search for a signal in a signal pool by it's name
+ * @details returns the pointer to the matching signal, or NULL if not found
+ * @param[in] *name string containing the signal you are searching for
+ * @param[in] **list array of pointers to struct signal_float. Must be ended with NULL
+ */
+struct signal_float *sig_search_list_f(char *name, struct signal_float **list);
+#endif	// SIG_SEARCH
+#endif	// SIG_DBG_NAME
+
 #endif

@@ -55,6 +55,10 @@
 #define SIG_DBG_NAME_LENGHT		64					//!< Length (in chars) of the maximum signal name. Default is 64, tweak for memory optimization
 #endif
 
+#if !defined(SIG_SEARCH) || defined(__DOXYGEN__)
+#define SIG_SEARCH	TRUE							//!< If TRUE, enables search operations on arrays and lists of signals.
+#endif
+
 /** Specify the type of 'n'. @warning default is @c unsigned @c int . Changing this for any other thing should be done carefully and checking all used sig-func is recommended! */
 typedef unsigned int n_t;
 
