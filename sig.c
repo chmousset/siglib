@@ -29,7 +29,7 @@
 int sig_errno = 0;
 void *sig_err_ptr = NULL;
 
-#ifdef SIG_DBG_NAME
+#if SIG_DBG_NAME
 char sig_err_name[SIG_DBG_NAME_LENGHT] = "";
 #endif
 

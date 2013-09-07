@@ -26,12 +26,19 @@
 #ifndef SIG_LIB_H__
 #define SIG_LIB_H__
 
+#include "sigconf.h"
 
 /** @addtogroup config
  * @{
  */
-#define SIG_DBG_NAME								//!< if defined, signals are named. Undefined to save data space
+#if !defined(SIG_DBG_NAME) || defined(__DOXYGEN__)
+#define SIG_DBG_NAME	TRUE						//!< if TRUE, signals are named. Set to FALSE to save data space
+#endif
+
+
+#if !defined(SIG_DBG_NAME_LENGHT) || defined(__DOXYGEN__)
 #define SIG_DBG_NAME_LENGHT		64					//!< Length (in chars) of the maximum signal name. Default is 64, tweak for memory optimization
+#endif
 
 /** Specify the type of 'n'. @warning default is @c unsigned @c int . Changing this for any other thing should be done carefully and checking all used sig-func is recommended! */
 typedef unsigned int n_t;
@@ -79,7 +86,7 @@ extern char sig_err_name[SIG_DBG_NAME_LENGHT];		//!< name of the signal that had
  * Returns 0
  * @pre should be called from (*x) function
  */
-#if defined(SIG_DBG_NAME) || defined(__DOXYGEN__)
+#if SIG_DBG_NAME || defined(__DOXYGEN__)
 	#define SIG_ERRNO(a) {sig_errno = a; \
 	strcpy(sig_err_name, self->name); \
 	sig_err_ptr = self; \
@@ -103,7 +110,7 @@ extern char sig_err_name[SIG_DBG_NAME_LENGHT];		//!< name of the signal that had
  * @brief structure representing a floating-point signal
  */
 struct signal_float {
-#if defined(SIG_DBG_NAME) || defined(__DOXYGEN__)
+#if SIG_DBG_NAME || defined(__DOXYGEN__)
 	char name[SIG_DBG_NAME_LENGHT];						//!< name of the signal
 #endif
 	float (*x)(struct signal_float *self, int n);		//!< pointer to the evaluation function (*x)
@@ -118,7 +125,7 @@ typedef float (*sig_func_f)(struct signal_float *self, int n);
  * @brief structure representing an integer signal
  */
 struct signal_int {
-#if defined(SIG_DBG_NAME) || defined(__DOXYGEN__)
+#if SIG_DBG_NAME || defined(__DOXYGEN__)
 	char name[SIG_DBG_NAME_LENGHT];						//!< name of the signal
 #endif
 	int (*x)(struct signal_int *self, int n);			//!< pointer to the evaluation function (*x)
