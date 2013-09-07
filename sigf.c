@@ -310,7 +310,7 @@ float sig_buf_read_f (struct signal_float *self, n_t n)
 		if (ptr->circular)
 			index = (n + ptr->delta) % ptr->size;
 		else
-			index = min((n + ptr->delta), ptr->size - 1);
+			index = min((n + (n_t)ptr->delta), (n_t)ptr->size - 1);
 		
 		self->x_cst = ptr->buffer[index];
 	}
