@@ -28,6 +28,16 @@
 
 #include "sigconf.h"
 
+
+#if !defined(TRUE) || defined(__DOXYGEN__)
+#define TRUE	1
+#endif
+
+
+#if !defined(FALSE) || defined(__DOXYGEN__)
+#define FLASE	0
+#endif
+
 /** @addtogroup config
  * @{
  */
