@@ -291,7 +291,7 @@ void sig_pid_compute_k_f (struct signal_float *self)
 	if (ptr == NULL)
 		return;
 	ptr->k[0] = ptr->p + ptr->i + ptr->d;
-	ptr->k[1] = -1 * ptr->p - 2 * ptr->i;
+	ptr->k[1] = -1 * ptr->p - 2 * ptr->d;
 	ptr->k[2] = ptr->d;
 }
 
