@@ -20,7 +20,7 @@
 INCDIR = -I ./
 INCDIR += -I ./test
 CC=gcc
-COPT=-Wall
+COPT=-Wall -O2 
 
 test_sigf:
 	$(CC) sigf.c sig.c test/testf.c test/csv.c test/test_pidf.c -o test/testf.out $(INCDIR) -lm $(COPT)
