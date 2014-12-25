@@ -153,4 +153,8 @@ struct signal_int {
 	void *params;										//!< points to the signal parameter(s), if any.
 };
 
+#define SIG_FN(a,b) {.x=a, .x_var=NULL, .x_cst=0, .params=(void*)b}
+#define SIG_PTR(a) {.x=NULL, .x_var=a, .x_cst=0, .params=NULL}
+#define SIG_CST(a) {.x=NULL, .x_var=NULL, .x_cst=a, .params=NULL}
+
 #endif
