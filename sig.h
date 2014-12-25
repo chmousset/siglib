@@ -132,7 +132,7 @@ struct signal_float {
 #if SIG_DBG_NAME || defined(__DOXYGEN__)
 	char name[SIG_DBG_NAME_LENGHT];						//!< name of the signal
 #endif
-	float (*x)(struct signal_float *self, int n);		//!< pointer to the evaluation function (*x)
+	float (*x)(struct signal_float *self, n_t n);		//!< pointer to the evaluation function (*x)
 	float *x_var;										//!< points to a variable. used if x == NULL
 	float x_cst;										//!< constant value. used if x == NULL && x_var == NULL
 	void *params;										//!< points to the signal parameter(s), if any.
@@ -147,7 +147,7 @@ struct signal_int {
 #if SIG_DBG_NAME || defined(__DOXYGEN__)
 	char name[SIG_DBG_NAME_LENGHT];						//!< name of the signal
 #endif
-	int (*x)(struct signal_int *self, int n);			//!< pointer to the evaluation function (*x)
+	int (*x)(struct signal_int *self, n_t n);			//!< pointer to the evaluation function (*x)
 	int *x_var;											//!< points to a variable. used if x == NULL
 	int x_cst;											//!< constant value. used if x == NULL && x_var == NULL
 	void *params;										//!< points to the signal parameter(s), if any.
