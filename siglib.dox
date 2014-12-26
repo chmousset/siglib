@@ -130,3 +130,9 @@
  * @ingroup siglib
  */
 
+ /**
+  * @defgroup scope Scope
+  * @details Scope to record and analyze data during runtime
+  * @ingroup siglib
+  */
+  
