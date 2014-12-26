@@ -157,4 +157,8 @@ struct signal_int {
 #define SIG_PTR(a) {.x=NULL, .x_var=a, .x_cst=0, .params=NULL}
 #define SIG_CST(a) {.x=NULL, .x_var=NULL, .x_cst=a, .params=NULL}
 
+#define SIGN_FN(n,a,b) {.name=n, .x=a, .x_var=NULL, .x_cst=0, .params=(void*)b}
+#define SIGN_PTR(n,a) {.name=n, .x=NULL, .x_var=a, .x_cst=0, .params=NULL}
+#define SIGN_CST(n,a) {.name=n, .x=NULL, .x_var=NULL, .x_cst=a, .params=NULL}
+
 #endif
