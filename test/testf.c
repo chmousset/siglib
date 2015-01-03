@@ -24,6 +24,7 @@
 #include <string.h>
 #include "csv.h"
 #include "test_pidf.h"
+#include "test_scope.h"
 
 
 int main ( int argc, char *argv[])
@@ -46,7 +47,7 @@ int main ( int argc, char *argv[])
 		return -1;
 	}
 	data_out = malloc(sizeof(float) * data_l);
-	test_pidf(data, data_l, data_out);
+	test_scope(data, data_l, data_out);
 	csv_free(data);
 	free(data_out);
 	
