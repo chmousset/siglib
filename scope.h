@@ -22,6 +22,9 @@
  * Scope Header
  */
 
+#ifndef SIG_SCOPE_H__
+#define SIG_SCOPE_H__
+
 #include <stdlib.h>
 #include "sig.h"
 
@@ -80,9 +83,11 @@ typedef struct scope_type
 
 		#if defined(SCOPE_USE_INT) || defined(__DOXYGEN__)
 			struct signal_int *signals_list_i[SCOPE_MAX_SIGNALS_LIST];	//!< Available (known) signal_int
+			int signal_list_count_i;									//!< Number of known signal_int
 		#endif
 		#if defined(SCOPE_USE_FLOAT) || defined(__DOXYGEN__)
 			struct signal_float *signals_list_f[SCOPE_MAX_SIGNALS_LIST];//!< Available (known) signals_float
+			int signal_list_count_f;									//!< Number of known signal_int
 		#endif
 	#endif
 
@@ -153,3 +158,4 @@ int scope_max_samples(scope_t *self);
  */
 void scope_update(scope_t *self, n_t n);
 
+#endif

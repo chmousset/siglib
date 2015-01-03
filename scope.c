@@ -25,13 +25,11 @@
 #include "scope.h"
 #include <string.h>
 
-
 void scope_init(scope_t *self, void *data, int size)
 {
 	memset(self, 0, sizeof(scope_t));
 	self->buffer = data;
 	self->buffer_size_bytes = size;
-	self->buffer_size = scope_max_samples(self);
 	self->prediv = 1;
 	self->state = SCOPE_INIT;
 }
@@ -48,34 +46,42 @@ void scope_setup(scope_t *self, char *signals, int prediv)
 	char *signame;
 	char delimiter = ',';
 		#if defined(SCOPE_USE_INT)
-			signame = strtok(signals, &delimiter);
+			memcpy(self->signals_names, signals, min(SCOPE_MAX_SIGNALS * SIG_DBG_NAME_LENGHT, strlen(signals)));
+			signame = strtok(self->signals_names, &delimiter);
 			self->signals_count_int = 0;
 			while(signame)
 			{
 				for(i=0; (i<SCOPE_MAX_SIGNALS_LIST) && (self->signals_count_int < SCOPE_MAX_SIGNALS); i++)
 				{
+					if(self->signals_list_i[i] == 0)
+						break;
 					if(strcmp(self->signals_list_i[i]->name, signame) == 0)
 					{
 						self->signals_int[self->signals_count_int] = self->signals_list_i[i];
 						self->signals_count_int++;
-						continue;
+						break;
 					}
 				}
 				signame = strtok(NULL, &delimiter);
 			}
 		#endif
 		#if defined(SCOPE_USE_FLOAT)
-			signame = strtok(signals, &delimiter);
+			memcpy(self->signals_names, signals, min(SCOPE_MAX_SIGNALS * SIG_DBG_NAME_LENGHT, strlen(signals)));
+			signame = strtok(self->signals_names, &delimiter);
 			self->signals_count_float = 0;
 			while(signame)
 			{
 				for(i=0; (i<SCOPE_MAX_SIGNALS_LIST) && (self->signals_count_float < SCOPE_MAX_SIGNALS); i++)
 				{
+					if(self->signals_list_f[i] == 0)
+					{
+						break;
+					}
 					if(strcmp(self->signals_list_f[i]->name, signame) == 0)
 					{
 						self->signals_float[self->signals_count_float] = self->signals_list_f[i];
 						self->signals_count_float++;
-						continue;
+						break;
 					}
 				}
 				signame = strtok(NULL, &delimiter);
@@ -90,11 +96,11 @@ void scope_setup(scope_t *self, char *signals, int prediv)
 #if(SCOPE_USE_INT)
 int scope_enlist_sig_int(scope_t *self, struct signal_int *sig)
 {
-	if(self->signals_count_int < SCOPE_MAX_SIGNALS)
+	if(self->signal_list_count_i < SCOPE_MAX_SIGNALS)
 	{
-		self->signals_int[self->signals_count_int] = sig;
-		self->signals_count_int++;
-		return (SCOPE_MAX_SIGNALS - self->signals_count_int);
+		self->signals_list_i[self->signal_list_count_i] = sig;
+		self->signal_list_count_i++;
+		return (SCOPE_MAX_SIGNALS - self->signal_list_count_i);
 	}
 	else
 		return -1;
@@ -104,11 +110,11 @@ int scope_enlist_sig_int(scope_t *self, struct signal_int *sig)
 #if(SCOPE_USE_FLOAT)
 int scope_enlist_sig_float(scope_t *self, struct signal_float *sig)
 {
-	if(self->signals_count_float < SCOPE_MAX_SIGNALS)
+	if((self->signal_list_count_f < SCOPE_MAX_SIGNALS) && *sig->name)
 	{
-		self->signals_float[self->signals_count_float] = sig;
-		self->signals_count_float++;
-		return (SCOPE_MAX_SIGNALS - self->signals_count_float);
+		self->signals_list_f[self->signal_list_count_f] = sig;
+		self->signal_list_count_f++;
+		return (SCOPE_MAX_SIGNALS - self->signal_list_count_f);
 	}
 	else
 		return -1;
@@ -177,6 +183,7 @@ void scope_update(scope_t *self, n_t n)
 				}
 			#endif
 			}
+			self->samples++;
 			self->count++;
 			self->count %= self->prediv;
 	};
