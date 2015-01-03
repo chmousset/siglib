@@ -30,7 +30,6 @@
 float sig_get_value_f(struct signal_float *self, n_t n)
 {
 	SIG_ERRNO_FAIL
-	
 	if(self->x)
 		return self->x(self, n);
 	if(self->x_var)
@@ -181,8 +180,7 @@ float sig_pid_opt_f (struct signal_float *self, n_t n)
 		SIG_ERRNO(-2);
 	if (n == ptr->n_last)
 		return self->x_cst;
-	if (n == ptr->n_last)
-		return self->x_cst;
+	ptr->n_last = n;
 	
 	// get the current error
 	error = sig_get_value_f(ptr->setpoint, n);
@@ -308,10 +306,10 @@ float sig_buf_read_f (struct signal_float *self, n_t n)
 		SIG_ERRNO(-2);
 	if ((ptr->buffer == NULL) && (ptr->check_buffer))
 		SIG_ERRNO(-3);
-	
 	if (n == ptr->n_last)
 		return self->x_cst;
-	
+	ptr->n_last = n;
+
 	if (ptr->buffer)
 	{
 		if (ptr->circular)
