@@ -140,7 +140,7 @@ struct signal_float {
 	float x_cst;										//!< constant value. used if x == NULL && x_var == NULL
 	void *params;										//!< points to the signal parameter(s), if any.
 };
-typedef float (*sig_func_f)(struct signal_float *self, int n);
+typedef float (*sig_func_f)(struct signal_float *self, n_t n);
 
 /** @ingroup int
  * @struct signal_int
