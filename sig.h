@@ -39,10 +39,16 @@
 #endif
 
 #if !defined(max)
-	#define max(a,b) ((a)>(b)? (a) : (b))
+	#define max(a,b) \
+		({ __typeof__ (a) _a = (a); \
+		__typeof__ (b) _b = (b); \
+		_a > _b ? _a : _b; })
 #endif
 #if !defined(min)
-	#define min(a,b) ((a)<(b)? (a) : (b))
+	#define min(a,b) \
+		({ __typeof__ (a) _a = (a); \
+		__typeof__ (b) _b = (b); \
+		_a < _b ? _a : _b; })
 #endif
 
 
